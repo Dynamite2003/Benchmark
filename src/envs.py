@@ -23,5 +23,7 @@ EVAL_REQUESTS_PATH = os.path.join(CACHE_PATH, "eval-queue")
 EVAL_RESULTS_PATH = os.path.join(CACHE_PATH, "eval-results")
 EVAL_REQUESTS_PATH_BACKEND = os.path.join(CACHE_PATH, "eval-queue-bk")
 EVAL_RESULTS_PATH_BACKEND = os.path.join(CACHE_PATH, "eval-results-bk")
-
+LONG_TERM_FORECASTING_PATH = os.path.join(CACHE_PATH, "results/Long-term-forecasting-results")
+ZERO_SHOT_FORECASTING_PATH = os.path.join(CACHE_PATH, "results/Zero-shot-forecasting-results")
+CLASSIFICATION_PATH = os.path.join(CACHE_PATH, "results/Classification-results")
 API = HfApi(token=TOKEN)

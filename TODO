@@ -1,0 +1,32 @@
+前端&评测结果：(Lookback-Search for optimal model，up to 720) @Zhiyuan
+前端参考：https://huggingface.co/spaces/Salesforce/GIFT-Eval，https://huggingface.co/spaces/autogluon/fev-leaderboard
+- Long-Term Forecasting（Averaged Results from Pred_Len in 96, 192, 336, 720）
+  - Averaged / Per Dataset | MSE，MAE
+  - ETT, Traffic, Weather, ECL （7*2+2=16列）
+  - Informer, Autoformer, TimesNet, PatchTST, iTransformer, Stationary, DLinear, Timer-XL, Crossformer, TimeMixer, TimeXer （11行）
+- Zero-Shot Forecasting：
+  - Averaged / Per Dataset | MSE，MAE
+  - ETT, Weather, ECL（7*2+2=16列）
+  - Timer-XL, Time-MoE, Moirai, TimesFM, Chronos 
+- Classification 
+  - Averaged / Per Dataset | Accuracy 
+  - UEA Datasets （10+1列）
+  - TimesBERT，Moment，ModernTCN，TimesNet (4行)
+数据来源：Timer-XL，TimeXer，TimesBERT等包含Baseline Model的论文
+[图片]
+[图片]
+[图片]
+评测提交方式  @Haixuan
+公开评测机制：Leaderboard提供测试代码和数据集，提交者运行后提供模型输出结果，管理员更新结果到Leaderboard (Vote for 3~4 models every month)
+流程参考：
+- https://github.com/SalesforceAIResearch/gift-eval
+- https://github.com/autogluon/fev/blob/main/docs/04-models.ipynb
+- https://github.com/thuml/Time-Series-Library/blob/main/tutorial/TimesNet_tutorial.ipynb
+任务：
+- Zero-Shot Forecasting， Long-Term Forecasting代码：OpenLTM
+- Classification 代码：TSLib，TimeBERT
+目标：测试套件 Suite (Pipeline & BeautySummary)
+Given CKPT -> Eval Code
+          -> API + Comment (Doc) + Notebook 
+                  -> System
+保证：Consistent （与公布的效果一致）, Reproducible（效果可复现）, Secure（避免数据泄漏）

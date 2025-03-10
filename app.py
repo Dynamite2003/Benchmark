@@ -25,7 +25,7 @@ from src.display.utils import (
     WeightType,
     Precision
 )
-from src.envs import API, EVAL_REQUESTS_PATH, EVAL_RESULTS_PATH, QUEUE_REPO, REPO_ID, RESULTS_REPO, TOKEN
+from src.envs import API, EVAL_REQUESTS_PATH, EVAL_RESULTS_PATH, QUEUE_REPO, REPO_ID, RESULTS_REPO, TOKEN, LONG_TERM_FORECASTING_PATH, ZERO_SHOT_FORECASTING_PATH, CLASSIFICATION_PATH
 from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df
 from src.submission.submit import add_new_eval
 from src.utils import norm_sNavie, pivot_df, get_grouped_dfs, pivot_existed_df, rename_metrics, format_df
@@ -76,6 +76,12 @@ LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS,
 # variate_type_df = pivot_existed_df(variate_type_df, tab_name='univariate')
 # print(f'Variate type dataframe is {variate_type_df}')
 # model_info_df = get_model_info_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH)
+
+
+long_term_forecasting_model_info_df = get_model_info_df(LONG_TERM_FORECASTING_PATH, EVAL_REQUESTS_PATH)
+zero_shot_forecasting_model_info_df = get_model_info_df(ZERO_SHOT_FORECASTING_PATH, EVAL_REQUESTS_PATH)
+classification_model_info_df = get_model_info_df(CLASSIFICATION_PATH, EVAL_REQUESTS_PATH)
+
 
 def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:

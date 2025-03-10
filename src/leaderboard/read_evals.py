@@ -198,46 +198,31 @@ def get_request_file_for_model(requests_path, model_name, precision):
                 request_file = tmp_request_file
     return request_file
 
-# TODO: modify the get_model_info function to adapt our models
+
 def get_model_info(results_path: str, requests_path: str) -> list[ModelConfig]:
     """From the path of the results folder root, extract all needed info for results"""
     model_result_filepaths = []
 
+    # 遍历results_path下的所有文件夹，找到config.json文件
     for root, _, files in os.walk(results_path):
-        # # We should only have json files in model config
-        # if len(files) == 0 or any([not f.endswith(".json") for f in files]):
-        #     continue
-        #
-        # # Sort the files by date
-        # try:
-        #     files.sort(key=lambda x: x.removesuffix(".json").removeprefix("results_")[:-7])
-        # except dateutil.parser._parser.ParserError:
-        #     files = [files[-1]]
-
         for file in files:
             if file == 'config.json':
                 model_result_filepaths.append(os.path.join(root, file))
 
+    # 从config.json文件中提取模型信息
     model_infos = {}
     for model_result_filepath in model_result_filepaths:
-        # Creation of result
         model_info = ModelConfig.init_from_json_file(model_result_filepath)
-        # eval_result.update_with_request_file(requests_path)
-
-        # Store results of same eval together
         model_name = model_info.model
         model_infos[model_name] = model_info
-        # if eval_name in eval_results.keys():
-        #     eval_results[eval_name].results.update({k: v for k, v in eval_result.results.items() if v is not None})
-        # else:
-        #     eval_results[eval_name] = eval_result
 
+    # 保存到list中 返回一个ModelConfig对象的list
     results = []
     for v in model_infos.values():
         try:
-            v.to_dict() # we test if the dict version is complete
+            v.to_dict()
             results.append(v)
-        except KeyError:  # not all eval values present
+        except KeyError: 
             continue
 
     return results
