@@ -60,7 +60,7 @@ LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS,
 ) = get_evaluation_queue_df(EVAL_REQUESTS_PATH, EVAL_COLS)
 
 # TODO: Add the model info to the leaderboard
-# grouped_dfs = get_grouped_dfs()
+# grouped_dfs = ()
 
 
 # domain_df, freq_df, term_length_df, variate_type_df, overall_df = grouped_dfs['domain'], grouped_dfs['frequency'], grouped_dfs['term_length'], grouped_dfs['univariate'], grouped_dfs['overall']

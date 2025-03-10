@@ -108,19 +108,26 @@ def pivot_existed_df(df, tab_name):
 def get_grouped_dfs(root_dir='results', ds_properties='results/dataset_properties.csv'):
     df_list = []
 
-    # Walk through all folders and subfolders in the root directory
+    # 遍历目录结构，收集所有 all_results.csv 文件内容
     for subdir, _, files in os.walk(root_dir):
         for file in files:
             if file == 'all_results.csv':
                 file_path = os.path.join(subdir, file)
                 df = pd.read_csv(file_path)
                 df_list.append(df)
-    # Concatenate all dataframes into one
+
+    # 将所有数据框合并为一个
     all_results_df = pd.concat(df_list, ignore_index=True)
+
+    # 对数据框进行排序，重置索引
     all_results_df = all_results_df.sort_values(by=['model', 'dataset']).reset_index(drop=True)
     all_results_df[['dataset', 'frequency', 'term_length']] = all_results_df['dataset'].str.split('/', expand=True)
 
+    # 读取数据集属性文件
     dataset_properties = pd.read_csv(ds_properties)
+
+
+    # 各种标准化的步骤处理
     # Reforemat the the first element of each row after the header following these rules:
     # 1. make all characters lowercase
     dataset_properties['dataset'] = dataset_properties['dataset'].apply(lambda x: x.lower())
@@ -135,16 +142,14 @@ def get_grouped_dfs(root_dir='results', ds_properties='results/dataset_propertie
 
     df = all_results_df
 
-    # convert it to a dictionary, with dataset as the key, and the value as another dictionary. The inner dictionary has the column names as the key, and the value as the value.
+    # 合并数据集属性和结果数据框
     dataset_properties_dict = dataset_properties.set_index('dataset').T.to_dict('dict')
     dataset_properties_dict.keys()
 
     # # match the dataset name in model_properties_dict with the dataset name in df and add a new column for each key value pair in the inner dictionary.
     for dataset in dataset_properties_dict.keys():
         for key in dataset_properties_dict[dataset].keys():
-            # set the row with the dataset name to the value of the key think step by step
-            # First, get the row with the dataset name
-            # Second, set the value of the key to the value of the key
+            # 合并属性 按照频率特殊处理
             if key == 'frequency':
                 # only set the frequency if the frequency column for all rows for the dataset is empty string
                 if all(df[df['dataset'] == dataset]['frequency'].isna()):
@@ -152,36 +157,39 @@ def get_grouped_dfs(root_dir='results', ds_properties='results/dataset_propertie
             else:
                 df.loc[df['dataset'] == dataset, key] = dataset_properties_dict[dataset][key]
 
-    # unify the frequency
+    # 统一频率的表示
     df = unify_freq(df)
-    # standardize by seasonal naive
+    # 通过seasonal_naive标准化数据
     df = standardize_df(df)
+
+    # 定义评估指标
     metric_columns = ['eval_metrics/MSE[mean]', 'eval_metrics/MSE[0.5]', 'eval_metrics/MAE[0.5]',
                       'eval_metrics/MASE[0.5]', 'eval_metrics/MAPE[0.5]', 'eval_metrics/sMAPE[0.5]',
                       'eval_metrics/MSIS', 'eval_metrics/RMSE[mean]', 'eval_metrics/NRMSE[mean]',
                       'eval_metrics/ND[0.5]', 'eval_metrics/mean_weighted_sum_quantile_loss']
+    # 基于 CRPS 指标计算每个数据集-时长-频率组合中模型的排名
     RANKING_METRIC = "eval_metrics/mean_weighted_sum_quantile_loss"
+
     df['rank'] = df.groupby(['dataset', 'term_length', 'frequency'])[f'{RANKING_METRIC}'].rank(method='first',
                                                                                                ascending=True)
     # create a new column called rank
     metric_columns.append('rank')
     # create a new column called univariate. Set it to true if column num_variates is 1, otherwise set it to false
     df['univariate'] = df['num_variates'] == 1
-
-    # group by domain
+    # 使用几何平均值计算模型的性能
     METRIC_CHOICES = ["eval_metrics/MASE[0.5]", "eval_metrics/mean_weighted_sum_quantile_loss"]
-    # ipdb.set_trace()
     grouped_results_overall = df.groupby(['model'])[METRIC_CHOICES].agg(stats.gmean)
     grouped_results_overall_rank = df.groupby(['model'])[['rank']].mean()
     grouped_results_overall = pd.concat([grouped_results_overall, grouped_results_overall_rank], axis=1)
 
-    # grouped_results_overall = grouped_results_overall.rename(columns={'model':'Model'})
-    # grouped_results.to_csv(f'artefacts/grouped_results_by_model.csv')
+
+    # 按照多个类别分组数据
     grouped_dfs = {}
     for col_name in ["domain", 'term_length', 'frequency', 'univariate']:
         grouped_dfs[col_name] = group_by(df, col_name)
         # print(f"Grouping by {col_name}:\n {grouped_dfs.head(20)}")
-    # ipdb.set_trace()
+    
+    # 添加一个总体的数据框
     grouped_dfs['overall'] = grouped_results_overall
     return grouped_dfs
 
