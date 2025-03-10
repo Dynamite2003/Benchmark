@@ -1,0 +1,5 @@
+{
+    "model": "VisionTS",
+    "model_type": "pretrained",
+    "model_dtype": "float32"
+}

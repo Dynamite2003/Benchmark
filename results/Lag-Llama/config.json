@@ -1,0 +1,6 @@
+{
+    "model": "Lag-Llama",
+    "model_type": "pretrained",
+    "model_dtype": "float32",
+    "model_link": "https://huggingface.co/time-series-foundation-models/Lag-Llama"
+}

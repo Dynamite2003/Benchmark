@@ -1,0 +1,5 @@
+{
+    "model": "Auto_Theta",
+    "model_type": "statistical",
+    "model_dtype": "float32"
+}

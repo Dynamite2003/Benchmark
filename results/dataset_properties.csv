@@ -1,0 +1,56 @@
+dataset,domain,frequency,num_variates
+M4 Yearly,Econ/Fin,A-DEC,1
+M4 Quarterly,Econ/Fin,Q-DEC,1
+M4 Monthly,Econ/Fin,M,1
+M4 Weekly,Econ/Fin,W-SUN,1
+M4 Daily,Econ/Fin,D,1
+M4 Hourly,Econ/Fin,H,1
+Electricity,Energy,15T,1
+Electricity,Energy,H,1
+Electricity,Energy,D,1
+Electricity,Energy,W-FRI,1
+ETT1,Energy,15T,7
+ETT1,Energy,H,7
+ETT1,Energy,D,7
+ETT1,Energy,W-THU,7
+ETT2,Energy,15T,7
+ETT2,Energy,H,7
+ETT2,Energy,D,7
+ETT2,Energy,W-THU,7
+Solar,Energy,10T,1
+Solar,Energy,H,1
+Solar,Energy,D,1
+Solar,Energy,W-FRI,1
+Hospital,Healthcare,M,1
+COVID Deaths,Healthcare,D,1
+US Births,Healthcare,D,1
+US Births,Healthcare,W-TUE,1
+US Births,Healthcare,M,1
+Saugeen,Nature,D,1
+Saugeen,Nature,W-THU,1
+Saugeen,Nature,M,1
+Temperature Rain,Nature,D,1
+KDD Cup 2018,Nature,H,1
+KDD Cup 2018,Nature,D,1
+Jena Weather,Nature,10T,21
+Jena Weather,Nature,H,21
+Jena Weather,Nature,D,21
+Car Parts,Sales,M,1
+Restaurant,Sales,D,1
+Hierarchical Sales,Sales,D,1
+Hierarchical Sales,Sales,W-WED,1
+Loop Seattle,Transport,5T,1
+Loop Seattle,Transport,H,1
+Loop Seattle,Transport,D,1
+SZ-Taxi,Transport,15T,1
+SZ-Taxi,Transport,H,1
+M_DENSE,Transport,H,1
+M_DENSE,Transport,D,1
+Bitbrains - Fast Storage,Web/CloudOps,5T,2
+Bitbrains - Fast Storage,Web/CloudOps,H,2
+Bitbrains - rnd,Web/CloudOps,5T,2
+Bitbrains - rnd,Web/CloudOps,H,2
+BizITObs - Application,Web/CloudOps,10S,2
+BizITObs - Service,Web/CloudOps,10S,2
+BizITObs - L2C,Web/CloudOps,5T,7
+BizITObs - L2C,Web/CloudOps,H,7
