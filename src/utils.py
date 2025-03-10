@@ -99,12 +99,10 @@ def pivot_existed_df(df, tab_name):
     df_pivot = df_pivot.reset_index()
     # df_pivot = df_pivot.round(3)
     df_pivot = format_df(df_pivot)
-    # df_pivot = df_pivot.applymap(format_number)
-    # # make sure the data type is float
-    # df_pivot.iloc[:, 1:] = df_pivot.iloc[:, 1:].astype(float)
+
     return df_pivot
 
-
+# 这一整个函数的作用是根据gift-eval的benchmark生成的results格式确定的，如果我们的benchmark生成的results格式不同，那么这个函数很多部分不需要（比如seasonal_naive标准化）
 def get_grouped_dfs(root_dir='results', ds_properties='results/dataset_properties.csv'):
     df_list = []
 
@@ -121,32 +119,36 @@ def get_grouped_dfs(root_dir='results', ds_properties='results/dataset_propertie
 
     # 对数据框进行排序，重置索引
     all_results_df = all_results_df.sort_values(by=['model', 'dataset']).reset_index(drop=True)
+
+    # GIFT-EVAL 项目中的数据集名称有一些特殊字符，需要进行处理，这里不需要（按照实验实际得到的results文件确定格式
+    # all_results_df['dataset'] = all_results_df['dataset'].str.replace(' ', '_')
     all_results_df[['dataset', 'frequency', 'term_length']] = all_results_df['dataset'].str.split('/', expand=True)
 
-    # 读取数据集属性文件
+    # 读取数据集属性文件（GIFT-EVAL 的properties中的dataset并非标准格式）
     dataset_properties = pd.read_csv(ds_properties)
-
-
     # 各种标准化的步骤处理
-    # Reforemat the the first element of each row after the header following these rules:
-    # 1. make all characters lowercase
     dataset_properties['dataset'] = dataset_properties['dataset'].apply(lambda x: x.lower())
-    # 2. replace all spaces with underscores
     dataset_properties['dataset'] = dataset_properties['dataset'].apply(lambda x: x.replace(' ', '_'))
-    # 3. Replace all dashes with underscores
     dataset_properties['dataset'] = dataset_properties['dataset'].apply(lambda x: x.replace('-', '_'))
-    # 4. Replace consecutive underscores with a single underscore. There maybe more than 2 consecutive underscores
     dataset_properties['dataset'] = dataset_properties['dataset'].apply(lambda x: re.sub('_+', '_', x))
-    # 5. Remove all leading and trailing underscores
     dataset_properties['dataset'] = dataset_properties['dataset'].apply(lambda x: x.strip('_'))
 
+    # 现在df 和 all_results_df都是所有的all_results.csv文件的垂直合并
     df = all_results_df
 
-    # 合并数据集属性和结果数据框
+    # 合并数据集属性和结果数据框 转换后的dict是一个按照dataset为key，其他内容为value的字典
+    #    dataset   domain    frequency  horizon
+    #     0  ETTh1    energy     hourly     96
+    #     1  Weather  climate    daily      30
+    # ----》
+    #{
+#     'ETTh1': {'domain': 'energy', 'frequency': 'hourly', 'horizon': 96},
+#     'Weather': {'domain': 'climate', 'frequency': 'daily', 'horizon': 30}
+#   }
     dataset_properties_dict = dataset_properties.set_index('dataset').T.to_dict('dict')
     dataset_properties_dict.keys()
 
-    # # match the dataset name in model_properties_dict with the dataset name in df and add a new column for each key value pair in the inner dictionary.
+    # 从每一个数据集的其他属性中提取属性，然后将其添加到结果数据框中 实际上就是把dataset_properties_dict中的属性添加到df中
     for dataset in dataset_properties_dict.keys():
         for key in dataset_properties_dict[dataset].keys():
             # 合并属性 按照频率特殊处理
