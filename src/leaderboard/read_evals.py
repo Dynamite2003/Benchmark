@@ -31,6 +31,8 @@ class ModelConfig:
             data = json.load(fp)
 
         # config = data.get("config")
+
+
         model = data.get("model", "")
         model_link = data.get("model_link", "")
         return cls(model=model, model_link=model_link,)

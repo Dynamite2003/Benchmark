@@ -131,7 +131,6 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         else:
             datatype_list.append('number' if pd.api.types.is_numeric_dtype(dataframe[col]) else 'str')
 
-    print(all_visible_columns)
 
     # 剩余代码修改
     return Leaderboard(

@@ -43,17 +43,20 @@ def aggregate_model_results_mse(results_dir):
                     model_record[f'{dataset}(MSE)'] = row['mse']
                 
                 # 计算整体平均值
-                # model_record['overall_mae'] = df['mae'].mean()
                 model_record['AVG'] = df['mse'].mean()
+                # AVG移动到最前面
+                
                 
                 all_models.append(model_record)
+ 
     
     # 创建最终的DataFrame
     result_df = pd.DataFrame(all_models)
     
     # 对结果进行排序（可选，例如按overall_mae排序）
     result_df = result_df.sort_values('AVG')
-    
+    # 把avg移动到第一列
+    result_df = result_df[['AVG'] + [col for col in result_df.columns if col != 'AVG']]
     return result_df
 
 
@@ -94,15 +97,18 @@ def aggregate_model_results_mae(results_dir):
                 
                 # 计算整体平均值
                 model_record['AVG'] = df['mae'].mean()
-                # model_record['overall_mse'] = df['mse'].mean()
+                # AVG移动到最前面
                 
                 all_models.append(model_record)
+                
     
     # 创建最终的DataFrame
     result_df = pd.DataFrame(all_models)
     
     # 对结果进行排序（可选，例如按overall_mae排序）
     result_df = result_df.sort_values('AVG')
+    # 把avg移动到第一列
+    result_df = result_df[['AVG'] + [col for col in result_df.columns if col != 'AVG']]
     
     return result_df
 
@@ -175,8 +181,6 @@ def get_merged_df(result_df: pd.DataFrame, model_info_df: pd.DataFrame) -> pd.Da
     """Merges the model info dataframe with the results dataframe"""
     # 合并两个数据框
     merged_df = pd.merge(model_info_df, result_df, on='model', how='inner')
-
-    # print(f"DF for merged ********** {merged_df}")
     
     # 为模型名称创建超链接
     if 'model_w_link' in merged_df.columns:
@@ -189,5 +193,7 @@ def get_merged_df(result_df: pd.DataFrame, model_info_df: pd.DataFrame) -> pd.Da
     # 如果存在model_w_link列也删除它，避免重复
     if 'model_w_link' in merged_df.columns:
         merged_df = merged_df.drop(columns=['model_w_link'], errors='ignore')
-    
+    # 如果model列有重复
+
+
     return merged_df
