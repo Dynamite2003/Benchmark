@@ -171,9 +171,23 @@ def get_model_info_df(results_path: str, requests_path: str, cols: list=[], benc
     print(f"DF for Model Info ********** {df}")
     return df
 
-# To get merged dataframe
 def get_merged_df(result_df: pd.DataFrame, model_info_df: pd.DataFrame) -> pd.DataFrame:
     """Merges the model info dataframe with the results dataframe"""
+    # 合并两个数据框
     merged_df = pd.merge(model_info_df, result_df, on='model', how='inner')
-    merged_df = merged_df.drop(columns=['model_w_link'])
+
+    # print(f"DF for merged ********** {merged_df}")
+    
+    # 为模型名称创建超链接
+    if 'model_w_link' in merged_df.columns:
+        # 创建包含HTML链接的新列，替换原始model列
+        merged_df['model'] = merged_df.apply(
+            lambda row: f'{row["model_w_link"]}' 
+            if pd.notnull(row.get("model_w_link")) else row["model"], 
+            axis=1
+        )
+    # 如果存在model_w_link列也删除它，避免重复
+    if 'model_w_link' in merged_df.columns:
+        merged_df = merged_df.drop(columns=['model_w_link'], errors='ignore')
+    
     return merged_df

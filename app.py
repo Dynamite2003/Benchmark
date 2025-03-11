@@ -128,9 +128,19 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         if (col.endswith('_mae') or col.endswith('_mse') or col == 'model') or col.endswith('_Avg'):
             dataset_metric_columns.append(col)
     
+    # 在init_leaderboard函数中添加以下代码
+    datatype_list = []
+    for col in dataframe.columns:
+        if col == 'model':
+            datatype_list.append('markdown')  # 使用markdown格式渲染带链接的模型名
+        else:
+            datatype_list.append('number' if pd.api.types.is_numeric_dtype(dataframe[col]) else 'str')
+
+
     # 剩余代码修改
     return Leaderboard(
         value=dataframe,
+        datatype = datatype_list,
         select_columns=SelectColumns(
             # 只默认显示模型名和数据集效果列
             default_selection=dataset_metric_columns,
