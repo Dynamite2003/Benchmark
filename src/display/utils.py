@@ -43,17 +43,10 @@ auto_eval_column_dict.append(["revision", ColumnContent, ColumnContent("Date", "
 
 # 更新model_info_dict以匹配实际数据框结构
 model_info_dict = []
-# 基本列
-model_info_dict.append(["model_type_symbol", ColumnContent, ColumnContent("T", "str", True, never_hidden=False)])
 model_info_dict.append(["model", ColumnContent, ColumnContent("model", "markdown", True, never_hidden=True)])
 # 链接列 - 新添加，对应model_w_link
 model_info_dict.append(["model_w_link", ColumnContent, ColumnContent("model_w_link", "markdown", False, never_hidden=False)])
 # 模型属性
-model_info_dict.append(["model_type", ColumnContent, ColumnContent("model_type", "str", True, False)])  # 显示Type列
-model_info_dict.append(["precision", ColumnContent, ColumnContent("Precision", "str", True, False)])  # 显示Precision列
-model_info_dict.append(["license", ColumnContent, ColumnContent("Hub License", "str", False, False)])  # 启用许可证列
-model_info_dict.append(["params", ColumnContent, ColumnContent("#Params (B)", "number", True, False)])  # 启用参数列
-model_info_dict.append(["likes", ColumnContent, ColumnContent("Hub ❤️", "number", False, False)])  # 启用喜欢数列
 
 # We use make dataclass to dynamically fill the scores from Tasks
 AutoEvalColumn = make_dataclass("AutoEvalColumn", auto_eval_column_dict, frozen=True)

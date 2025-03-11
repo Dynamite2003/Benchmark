@@ -39,12 +39,12 @@ def aggregate_model_results_mse(results_dir):
                 # 为每个数据集添加mae和mse结果
                 for _, row in df.iterrows():
                     dataset = row['dataset']
-                    # model_record[f'{dataset}_mae'] = row['mae']
-                    model_record[f'{dataset}_mse'] = row['mse']
+                    # model_record[f'{dataset}(MSE)] = row['mae']
+                    model_record[f'{dataset}(MSE)'] = row['mse']
                 
                 # 计算整体平均值
                 # model_record['overall_mae'] = df['mae'].mean()
-                model_record['Avg'] = df['mse'].mean()
+                model_record['AVG'] = df['mse'].mean()
                 
                 all_models.append(model_record)
     
@@ -52,7 +52,7 @@ def aggregate_model_results_mse(results_dir):
     result_df = pd.DataFrame(all_models)
     
     # 对结果进行排序（可选，例如按overall_mae排序）
-    result_df = result_df.sort_values('Avg')
+    result_df = result_df.sort_values('AVG')
     
     return result_df
 
@@ -89,11 +89,11 @@ def aggregate_model_results_mae(results_dir):
                 # 为每个数据集添加mae和mse结果
                 for _, row in df.iterrows():
                     dataset = row['dataset']
-                    model_record[f'{dataset}_mae'] = row['mae']
-                    # model_record[f'{dataset}_mse'] = row['mse']
+                    model_record[f'{dataset}(MAE)'] = row['mae']
+                    # model_record[f'{dataset}(MAE)'] = row['mse']
                 
                 # 计算整体平均值
-                model_record['Avg'] = df['mae'].mean()
+                model_record['AVG'] = df['mae'].mean()
                 # model_record['overall_mse'] = df['mse'].mean()
                 
                 all_models.append(model_record)
@@ -102,7 +102,7 @@ def aggregate_model_results_mae(results_dir):
     result_df = pd.DataFrame(all_models)
     
     # 对结果进行排序（可选，例如按overall_mae排序）
-    result_df = result_df.sort_values('Avg')
+    result_df = result_df.sort_values('AVG')
     
     return result_df
 

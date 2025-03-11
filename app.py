@@ -28,7 +28,7 @@ from src.display.utils import (
 from src.envs import API, EVAL_REQUESTS_PATH, EVAL_RESULTS_PATH, QUEUE_REPO, REPO_ID, RESULTS_REPO, TOKEN, LONG_TERM_FORECASTING_PATH, ZERO_SHOT_FORECASTING_PATH, CLASSIFICATION_PATH
 from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df, aggregate_model_results_mse, aggregate_model_results_mae
 from src.submission.submit import add_new_eval
-from src.utils import norm_sNavie, pivot_df, get_grouped_dfs, pivot_existed_df, rename_metrics, format_df
+from src.utils import norm_sNavie, pivot_df, pivot_existed_df, rename_metrics, format_df
 
 
 def restart_space():
@@ -59,24 +59,6 @@ LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS,
     pending_eval_queue_df,
 ) = get_evaluation_queue_df(EVAL_REQUESTS_PATH, EVAL_COLS)
 
-# TODO: Add the model info to the leaderboard
-# grouped_dfs = ()
-
-
-# domain_df, freq_df, term_length_df, variate_type_df, overall_df = grouped_dfs['domain'], grouped_dfs['frequency'], grouped_dfs['term_length'], grouped_dfs['univariate'], grouped_dfs['overall']
-# overall_df = rename_metrics(overall_df)
-# overall_df = format_df(overall_df)
-# overall_df = overall_df.sort_values(by=['Rank'])
-# domain_df = pivot_existed_df(domain_df, tab_name='domain')
-# print(f'Domain dataframe is {domain_df}')
-# freq_df = pivot_existed_df(freq_df, tab_name='frequency')
-# print(f'Freq dataframe is {freq_df}')
-# term_length_df = pivot_existed_df(term_length_df, tab_name='term_length')
-# print(f'Term length dataframe is {term_length_df}')
-# variate_type_df = pivot_existed_df(variate_type_df, tab_name='univariate')
-# print(f'Variate type dataframe is {variate_type_df}')
-# model_info_df = get_model_info_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH)
-
 
 long_term_forecasting_model_info_df = get_model_info_df(LONG_TERM_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 zero_shot_forecasting_model_info_df = get_model_info_df(ZERO_SHOT_FORECASTING_PATH, EVAL_REQUESTS_PATH)
@@ -87,17 +69,12 @@ print(long_term_forecasting_model_info_df)
 
 long_term_mse_dataframe = aggregate_model_results_mse(LONG_TERM_FORECASTING_PATH)
 long_term_mae_dataframe = aggregate_model_results_mae(LONG_TERM_FORECASTING_PATH)
+print(long_term_mse_dataframe)
+print(long_term_mae_dataframe)
 
 def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:
         raise ValueError("Leaderboard DataFrame is empty or None.")
-    
-    # 打印输入数据框信息
-    print("-----------------")
-    if model_info_df is not None:
-        print(model_info_df.head())
-    print("-----------------")
-    print(dataframe.head())
     
     # 如果提供了模型信息数据框，使用get_merged_df合并
     if model_info_df is not None and not model_info_df.empty:
@@ -114,20 +91,38 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         else:
             print("模型信息数据框缺少必要的列 'model' 或 'model_w_link'")
     
-    # 添加缺失的必需列
-    required_columns = ['model_type', 'T']
-    for col in required_columns:
-        if col not in dataframe.columns:
-            dataframe[col] = "未知"  # 用默认值填充
+
+     # 初始化变量
+    dataset_metric_columns = ['model']
+    avg_column = None  # 确保初始化该变量
+     
+    # 打印所有列名以进行调试
+    print("所有数据列:", dataframe.columns.tolist())
     
-    
-    # 识别数据集性能指标列 (假设是除model和以model_type/T等开头的列外的所有列)
-    dataset_metric_columns = []
     for col in dataframe.columns:
-        # 只保留数据集性能指标列和overall列
-        if (col.endswith('_mae') or col.endswith('_mse') or col == 'model') or col.endswith('_Avg'):
+        # 尝试不同的方式识别AVG列
+        if col.endswith('AVG') or col == 'AVG' or col == 'Average':
+            print(f"找到平均值列: {col}")
+            avg_column = col
+        # 识别其他必须显示的数据集指标列
+        elif col.endswith('(MAE)') or col.endswith('(MSE)'):
             dataset_metric_columns.append(col)
     
+    # 所有默认显示的列
+    all_visible_columns = dataset_metric_columns.copy()
+    if avg_column:
+        all_visible_columns.append(avg_column)
+        print(f"添加平均值列到visible columns: {all_visible_columns}")
+    else:
+        print("警告: 未找到平均值列")
+    
+    # 计算需要隐藏的列
+    columns_to_hide = []
+    for col in dataframe.columns:
+        if col not in all_visible_columns:
+            columns_to_hide.append(col)
+
+
     # 在init_leaderboard函数中添加以下代码
     datatype_list = []
     for col in dataframe.columns:
@@ -136,6 +131,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         else:
             datatype_list.append('number' if pd.api.types.is_numeric_dtype(dataframe[col]) else 'str')
 
+    print(all_visible_columns)
 
     # 剩余代码修改
     return Leaderboard(
@@ -143,19 +139,21 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         datatype = datatype_list,
         select_columns=SelectColumns(
             # 只默认显示模型名和数据集效果列
-            default_selection=dataset_metric_columns,
+            default_selection=all_visible_columns,
             # 只有模型名称不可取消选择
-            cant_deselect=['model'],
-            label="选择要显示的列:",
+            cant_deselect=dataset_metric_columns,
+            label="Choose columns to display:",
         ),
-        hide_columns=[c.name for c in fields(ModelInfoColumn) if c.hidden],
+        hide_columns=columns_to_hide,
         search_columns=['model'],
         filter_columns=[],
         # 单独设置model 列的宽度
-        
-        column_widths=[250] + [180 for _ in range(len(dataframe.columns)-2)],
+        column_widths=[250] + [180 for _ in range(len(dataframe.columns)-1)],
         interactive=False,
     )
+
+
+
 demo = gr.Blocks(css=custom_css)
 with demo:
     gr.HTML(TITLE)

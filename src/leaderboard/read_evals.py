@@ -31,26 +31,15 @@ class ModelConfig:
             data = json.load(fp)
 
         # config = data.get("config")
-
-        # Precision
-        precision = Precision.from_str(data.get("model_dtype"))
-        model_type = ModelType.from_str(data.get("model_type", ""))
         model = data.get("model", "")
         model_link = data.get("model_link", "")
-        return cls(model=model, model_link=model_link, model_type=model_type, precision=precision)
+        return cls(model=model, model_link=model_link,)
 
     def to_dict(self):
         """Converts the model info to a dict compatible with our dataframe display"""
         data_dict = {
             ModelInfoColumn.model.name: self.model,
             'model_w_link': model_hyperlink(self.model_link, self.model),
-            ModelInfoColumn.precision.name: self.precision.value.name,
-            ModelInfoColumn.model_type.name: self.model_type.value.name,
-            ModelInfoColumn.model_type_symbol.name: self.model_type.value.symbol,
-            # ModelInfoColumn.model.model_link: model_hyperlink(self.full_model),
-            ModelInfoColumn.license.name: self.license,
-            ModelInfoColumn.likes.name: self.likes,
-            ModelInfoColumn.params.name: self.num_params,
         }
 
         return data_dict
