@@ -26,7 +26,7 @@ from src.display.utils import (
     Precision
 )
 from src.envs import API, EVAL_REQUESTS_PATH, EVAL_RESULTS_PATH, QUEUE_REPO, REPO_ID, RESULTS_REPO, TOKEN, LONG_TERM_FORECASTING_PATH, ZERO_SHOT_FORECASTING_PATH, CLASSIFICATION_PATH
-from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df, aggregate_model_results
+from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df, aggregate_model_results_mse, aggregate_model_results_mae
 from src.submission.submit import add_new_eval
 from src.utils import norm_sNavie, pivot_df, get_grouped_dfs, pivot_existed_df, rename_metrics, format_df
 
@@ -85,9 +85,9 @@ print("-----------------")
 print(long_term_forecasting_model_info_df)
 
 
-long_term_dataframe = aggregate_model_results(LONG_TERM_FORECASTING_PATH)
-print("-----------------")
-print(long_term_dataframe)
+long_term_mse_dataframe = aggregate_model_results_mse(LONG_TERM_FORECASTING_PATH)
+long_term_mae_dataframe = aggregate_model_results_mae(LONG_TERM_FORECASTING_PATH)
+
 def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:
         raise ValueError("Leaderboard DataFrame is empty or None.")
@@ -125,8 +125,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     dataset_metric_columns = []
     for col in dataframe.columns:
         # 只保留数据集性能指标列和overall列
-        if (col.endswith('_mae') or col.endswith('_mse') or 
-            col.startswith('overall_') or col == 'model'):
+        if (col.endswith('_mae') or col.endswith('_mse') or col == 'model') or col.endswith('_Avg'):
             dataset_metric_columns.append(col)
     
     # 剩余代码修改
@@ -153,22 +152,33 @@ with demo:
     gr.Markdown(INTRODUCTION_TEXT, elem_classes="markdown-text")
 
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
-        with gr.TabItem("🏅 Long-Term Forecasting", elem_id="time-series-benchmark-tab-table", id=1):
-            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
-        with gr.TabItem("🏅 Testing", elem_id="time-series-benchmark-tab-table", id=100):
-            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
-
-        with gr.TabItem("🏅 Zero-Shot Forecasting", elem_id="time-series-benchmark-tab-table", id=2):
-            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
+        with gr.TabItem("🏅 Long-Term Forecasting(MSE) )", elem_id="time-series-benchmark-tab-table", id=1):
+            leaderboard = init_leaderboard(long_term_mse_dataframe,long_term_forecasting_model_info_df)
+        with gr.TabItem("🏅 Long-Term Forecasting(MAE)", elem_id="time-series-benchmark-tab-table", id=2):
+            leaderboard = init_leaderboard(long_term_mae_dataframe,long_term_forecasting_model_info_df)
    
-        with gr.TabItem("🏅 Classification ", elem_id="time-series-benchmark-tab-table", id=3):
-            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
-   
-        with gr.TabItem("🏅 Time Series Benchmark", elem_id="time-series-benchmark-tab-table", id=4):
-            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
-
         with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
+    with gr.Tabs(elem_classes="tab-buttons") as tabs:
+
+        with gr.TabItem("🏅 Zero-Shot Forecasting(MSE)", elem_id="time-series-benchmark-tab-table", id=2):
+            leaderboard = init_leaderboard(long_term_mse_dataframe,long_term_forecasting_model_info_df)
+   
+        with gr.TabItem("🏅 Zero-Shot Forecasting(MAE)", elem_id="time-series-benchmark-tab-table", id=3):
+            leaderboard = init_leaderboard(long_term_mae_dataframe,long_term_forecasting_model_info_df)
+        with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
+            gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
+
+    with gr.Tabs(elem_classes="tab-buttons") as tabs:
+        with gr.TabItem("🏅 Classification(MSE)", elem_id="time-series-benchmark-tab-table", id=3):
+            leaderboard = init_leaderboard(long_term_mse_dataframe,long_term_forecasting_model_info_df)
+   
+        with gr.TabItem("🏅 Classification(MAE)", elem_id="time-series-benchmark-tab-table", id=4):
+            leaderboard = init_leaderboard(long_term_mae_dataframe,long_term_forecasting_model_info_df)
+        with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
+            gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
+
+
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
         with gr.TabItem("🚀 Submit here! ", elem_id="time-series-benchmark-tab-table", id=6):
             with gr.Column():

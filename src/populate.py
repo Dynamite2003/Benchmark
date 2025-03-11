@@ -7,7 +7,7 @@ from src.display.formatting import has_no_nan_values, make_clickable_model
 from src.display.utils import AutoEvalColumn, EvalQueueColumn
 from src.leaderboard.read_evals import get_raw_eval_results, get_model_info
 
-def aggregate_model_results(results_dir):
+def aggregate_model_results_mse(results_dir):
     """
     聚合所有模型的结果为一个排行榜数据框
     
@@ -24,7 +24,57 @@ def aggregate_model_results(results_dir):
     for model_dir in os.listdir(results_dir):
         model_path = os.path.join(results_dir, model_dir)
         if os.path.isdir(model_path):
-            results_file = os.path.join(model_path, "results.csv")
+            results_file = os.path.join(model_path, "results_mse.csv")
+            
+            if os.path.exists(results_file):
+                # 读取模型结果
+                df = pd.read_csv(results_file)
+                
+                # 记录所有唯一数据集
+                datasets.update(df['dataset'].unique())
+                
+                # 创建一个行记录
+                model_record = {'model': model_dir}
+                
+                # 为每个数据集添加mae和mse结果
+                for _, row in df.iterrows():
+                    dataset = row['dataset']
+                    # model_record[f'{dataset}_mae'] = row['mae']
+                    model_record[f'{dataset}_mse'] = row['mse']
+                
+                # 计算整体平均值
+                # model_record['overall_mae'] = df['mae'].mean()
+                model_record['Avg'] = df['mse'].mean()
+                
+                all_models.append(model_record)
+    
+    # 创建最终的DataFrame
+    result_df = pd.DataFrame(all_models)
+    
+    # 对结果进行排序（可选，例如按overall_mae排序）
+    result_df = result_df.sort_values('Avg')
+    
+    return result_df
+
+
+def aggregate_model_results_mae(results_dir):
+    """
+    聚合所有模型的结果为一个排行榜数据框
+    
+    参数:
+    results_dir: 包含所有模型结果文件夹的目录
+    
+    返回:
+    包含所有模型在所有数据集上的性能指标的DataFrame
+    """
+    all_models = []
+    datasets = set()
+    
+    # 遍历每个模型的结果目录
+    for model_dir in os.listdir(results_dir):
+        model_path = os.path.join(results_dir, model_dir)
+        if os.path.isdir(model_path):
+            results_file = os.path.join(model_path, "results_mae.csv")
             
             if os.path.exists(results_file):
                 # 读取模型结果
@@ -40,11 +90,11 @@ def aggregate_model_results(results_dir):
                 for _, row in df.iterrows():
                     dataset = row['dataset']
                     model_record[f'{dataset}_mae'] = row['mae']
-                    model_record[f'{dataset}_mse'] = row['mse']
+                    # model_record[f'{dataset}_mse'] = row['mse']
                 
                 # 计算整体平均值
-                model_record['overall_mae'] = df['mae'].mean()
-                model_record['overall_mse'] = df['mse'].mean()
+                model_record['Avg'] = df['mae'].mean()
+                # model_record['overall_mse'] = df['mse'].mean()
                 
                 all_models.append(model_record)
     
@@ -52,9 +102,10 @@ def aggregate_model_results(results_dir):
     result_df = pd.DataFrame(all_models)
     
     # 对结果进行排序（可选，例如按overall_mae排序）
-    result_df = result_df.sort_values('overall_mae')
+    result_df = result_df.sort_values('Avg')
     
     return result_df
+
 
 
 def get_leaderboard_df(results_path: str, requests_path: str, cols: list, benchmark_cols: list) -> pd.DataFrame:
