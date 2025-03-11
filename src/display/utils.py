@@ -41,22 +41,19 @@ auto_eval_column_dict.append(["weight_type", ColumnContent, ColumnContent("Weigh
 auto_eval_column_dict.append(["revision", ColumnContent, ColumnContent("Date", "str", True)])
                              
 
-# TODO: add our model info here
+# 更新model_info_dict以匹配实际数据框结构
 model_info_dict = []
-# Init column for the model properties
-model_info_dict.append(["model_type_symbol", ColumnContent, ColumnContent("T", "str", True, never_hidden=True)])
+# 基本列
+model_info_dict.append(["model_type_symbol", ColumnContent, ColumnContent("T", "str", True, never_hidden=False)])
 model_info_dict.append(["model", ColumnContent, ColumnContent("model", "markdown", True, never_hidden=True)])
-# Model information
-model_info_dict.append(["model_type", ColumnContent, ColumnContent("Type", "str", False, True)])
-# model_info_dict.append(["architecture", ColumnContent, ColumnContent("Architecture", "str", False)])
-# model_info_dict.append(["weight_type", ColumnContent, ColumnContent("Weight type", "str", False, True)])
-model_info_dict.append(["precision", ColumnContent, ColumnContent("Precision", "str", False, True)])
-model_info_dict.append(["license", ColumnContent, ColumnContent("Hub License", "str", False, True)])
-model_info_dict.append(["params", ColumnContent, ColumnContent("#Params (B)", "number", False, True)])
-model_info_dict.append(["likes", ColumnContent, ColumnContent("Hub ❤️", "number", False, True)])
-model_info_dict.append(["still_on_hub", ColumnContent, ColumnContent("Available on the hub", "bool", False)])
-# model_info_dict.append(["revision", ColumnContent, ColumnContent("Model sha", "str", False, False)])
-
+# 链接列 - 新添加，对应model_w_link
+model_info_dict.append(["model_w_link", ColumnContent, ColumnContent("model_w_link", "markdown", False, never_hidden=False)])
+# 模型属性
+model_info_dict.append(["model_type", ColumnContent, ColumnContent("model_type", "str", True, False)])  # 显示Type列
+model_info_dict.append(["precision", ColumnContent, ColumnContent("Precision", "str", True, False)])  # 显示Precision列
+model_info_dict.append(["license", ColumnContent, ColumnContent("Hub License", "str", False, False)])  # 启用许可证列
+model_info_dict.append(["params", ColumnContent, ColumnContent("#Params (B)", "number", True, False)])  # 启用参数列
+model_info_dict.append(["likes", ColumnContent, ColumnContent("Hub ❤️", "number", False, False)])  # 启用喜欢数列
 
 # We use make dataclass to dynamically fill the scores from Tasks
 AutoEvalColumn = make_dataclass("AutoEvalColumn", auto_eval_column_dict, frozen=True)

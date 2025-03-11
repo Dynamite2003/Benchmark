@@ -26,7 +26,7 @@ from src.display.utils import (
     Precision
 )
 from src.envs import API, EVAL_REQUESTS_PATH, EVAL_RESULTS_PATH, QUEUE_REPO, REPO_ID, RESULTS_REPO, TOKEN, LONG_TERM_FORECASTING_PATH, ZERO_SHOT_FORECASTING_PATH, CLASSIFICATION_PATH
-from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df
+from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df, aggregate_model_results
 from src.submission.submit import add_new_eval
 from src.utils import norm_sNavie, pivot_df, get_grouped_dfs, pivot_existed_df, rename_metrics, format_df
 
@@ -81,58 +81,72 @@ LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS,
 long_term_forecasting_model_info_df = get_model_info_df(LONG_TERM_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 zero_shot_forecasting_model_info_df = get_model_info_df(ZERO_SHOT_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 classification_model_info_df = get_model_info_df(CLASSIFICATION_PATH, EVAL_REQUESTS_PATH)
+print("-----------------")
+print(long_term_forecasting_model_info_df)
 
 
+long_term_dataframe = aggregate_model_results(LONG_TERM_FORECASTING_PATH)
+print("-----------------")
+print(long_term_dataframe)
 def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:
         raise ValueError("Leaderboard DataFrame is empty or None.")
-    # TODO: Add the model info to the leaderboard
-     
-    # model_info_col_list = [c.name for c in fields(ModelInfoColumn) if c.displayed_by_default if c.name not in ['#Params (B)', 'available_on_hub', 'hub', 'Model sha','Hub License']]
-    # col2type_dict = {c.name: c.type for c in fields(ModelInfoColumn)}
-    # default_selection_list = list(ori_dataframe.columns) + model_info_col_list
-    # merged_df = get_merged_df(ori_dataframe, model_info_df)
-    # new_cols = ['T'] + [col for col in merged_df.columns if col != 'T']
-    # merged_df = merged_df[new_cols]
-    # if sort_val:
-    #     if sort_val in merged_df.columns:
-    #         merged_df = merged_df.sort_values(by=[sort_val])
-    #     else:
-    #         print(f'Warning: cannot sort by {sort_val}')
-    # print('Merged df: ', merged_df)
-
-    # datatype_list = [col2type_dict[col] if col in col2type_dict else 'number' for col in merged_df.columns]
-
- 
+    
+    # 打印输入数据框信息
+    print("-----------------")
+    if model_info_df is not None:
+        print(model_info_df.head())
+    print("-----------------")
+    print(dataframe.head())
+    
+    # 如果提供了模型信息数据框，使用get_merged_df合并
+    if model_info_df is not None and not model_info_df.empty:
+        # 确保model_info_df包含必要的列
+        if 'model' in model_info_df.columns and 'model_w_link' in model_info_df.columns:
+            try:
+                from src.populate import get_merged_df
+                merged_df = get_merged_df(dataframe, model_info_df)
+                print("合并成功！")
+                dataframe = merged_df  # 使用合并后的数据框
+            except Exception as e:
+                print(f"合并数据框时出错: {e}")
+                # 如果合并失败，继续使用原始数据框
+        else:
+            print("模型信息数据框缺少必要的列 'model' 或 'model_w_link'")
+    
+    # 添加缺失的必需列
+    required_columns = ['model_type', 'T']
+    for col in required_columns:
+        if col not in dataframe.columns:
+            dataframe[col] = "未知"  # 用默认值填充
+    
+    
+    # 识别数据集性能指标列 (假设是除model和以model_type/T等开头的列外的所有列)
+    dataset_metric_columns = []
+    for col in dataframe.columns:
+        # 只保留数据集性能指标列和overall列
+        if (col.endswith('_mae') or col.endswith('_mse') or 
+            col.startswith('overall_') or col == 'model'):
+            dataset_metric_columns.append(col)
+    
+    # 剩余代码修改
     return Leaderboard(
         value=dataframe,
-        datatype=[c.type for c in fields(AutoEvalColumn)],
         select_columns=SelectColumns(
-            default_selection=[c.name for c in fields(AutoEvalColumn) if c.displayed_by_default],
-            cant_deselect=[c.name for c in fields(AutoEvalColumn) if c.never_hidden],
-            label="Select Columns to Display:",
+            # 只默认显示模型名和数据集效果列
+            default_selection=dataset_metric_columns,
+            # 只有模型名称不可取消选择
+            cant_deselect=['model'],
+            label="选择要显示的列:",
         ),
-        search_columns=[AutoEvalColumn.model.name, AutoEvalColumn.license.name],
-        hide_columns=[c.name for c in fields(AutoEvalColumn) if c.hidden],
-        filter_columns=[
-            ColumnFilter(AutoEvalColumn.model_type.name, type="checkboxgroup", label="Model types"),
-            ColumnFilter(AutoEvalColumn.precision.name, type="checkboxgroup", label="Precision"),
-            ColumnFilter(
-                AutoEvalColumn.params.name,
-                type="slider",
-                min=0.01,
-                max=150,
-                label="Select the number of parameters (B)",
-            ),
-            ColumnFilter(
-                AutoEvalColumn.still_on_hub.name, type="boolean", label="Deleted/incomplete", default=True
-            ),
-        ],
-        bool_checkboxgroup_label="Hide models",
+        hide_columns=[c.name for c in fields(ModelInfoColumn) if c.hidden],
+        search_columns=['model'],
+        filter_columns=[],
+        # 单独设置model 列的宽度
+        
+        column_widths=[250] + [180 for _ in range(len(dataframe.columns)-2)],
         interactive=False,
     )
-
-
 demo = gr.Blocks(css=custom_css)
 with demo:
     gr.HTML(TITLE)
@@ -140,16 +154,18 @@ with demo:
 
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
         with gr.TabItem("🏅 Long-Term Forecasting", elem_id="time-series-benchmark-tab-table", id=1):
-            leaderboard = init_leaderboard(LEADERBOARD_DF)
-   
+            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
+        with gr.TabItem("🏅 Testing", elem_id="time-series-benchmark-tab-table", id=100):
+            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
+
         with gr.TabItem("🏅 Zero-Shot Forecasting", elem_id="time-series-benchmark-tab-table", id=2):
-            leaderboard = init_leaderboard(LEADERBOARD_DF)
+            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
    
         with gr.TabItem("🏅 Classification ", elem_id="time-series-benchmark-tab-table", id=3):
-            leaderboard = init_leaderboard(LEADERBOARD_DF)
+            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
    
         with gr.TabItem("🏅 Time Series Benchmark", elem_id="time-series-benchmark-tab-table", id=4):
-            leaderboard = init_leaderboard(LEADERBOARD_DF)
+            leaderboard = init_leaderboard(long_term_dataframe,long_term_forecasting_model_info_df)
 
         with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
