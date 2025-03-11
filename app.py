@@ -145,7 +145,9 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         ),
         hide_columns=columns_to_hide,
         search_columns=['model'],
-        filter_columns=[],
+         filter_columns=[
+            ColumnFilter(ModelInfoColumn.model_type.name, type="checkboxgroup", label="Model types"),
+        ],
         # 单独设置model 列的宽度
         column_widths=[250] + [180 for _ in range(len(dataframe.columns)-1)],
         interactive=False,

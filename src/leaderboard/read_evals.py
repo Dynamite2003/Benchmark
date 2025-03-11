@@ -35,13 +35,19 @@ class ModelConfig:
 
         model = data.get("model", "")
         model_link = data.get("model_link", "")
-        return cls(model=model, model_link=model_link,)
+        model_type = ModelType.from_str(data.get("model_type", ""))
+        print("--------------------")
+        print(model_type)
+
+        return cls(model=model, model_link=model_link,model_type=model_type)
 
     def to_dict(self):
         """Converts the model info to a dict compatible with our dataframe display"""
         data_dict = {
             ModelInfoColumn.model.name: self.model,
             'model_w_link': model_hyperlink(self.model_link, self.model),
+            ModelInfoColumn.model_type.name: self.model_type.value.name,
+            ModelInfoColumn.model_type_symbol.name: self.model_type.value.symbol,
         }
 
         return data_dict
@@ -205,7 +211,9 @@ def get_model_info(results_path: str, requests_path: str) -> list[ModelConfig]:
     for model_result_filepath in model_result_filepaths:
         model_info = ModelConfig.init_from_json_file(model_result_filepath)
         model_name = model_info.model
+
         model_infos[model_name] = model_info
+
 
     # 保存到list中 返回一个ModelConfig对象的list
     results = []

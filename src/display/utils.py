@@ -46,6 +46,8 @@ model_info_dict = []
 model_info_dict.append(["model", ColumnContent, ColumnContent("model", "markdown", True, never_hidden=True)])
 # 链接列 - 新添加，对应model_w_link
 model_info_dict.append(["model_w_link", ColumnContent, ColumnContent("model_w_link", "markdown", False, never_hidden=False)])
+model_info_dict.append(["model_type", ColumnContent, ColumnContent("model_type", "str", True)])
+model_info_dict.append(["model_type_symbol", ColumnContent, ColumnContent("model_type_symbol", "str", True)])
 # 模型属性
 
 # We use make dataclass to dynamically fill the scores from Tasks
@@ -71,11 +73,10 @@ class ModelDetails:
 
 
 class ModelType(Enum):
-    PT = ModelDetails(name="pretrained", symbol="🟢")
-    FT = ModelDetails(name="fine-tuned", symbol="🔶")
-    IFT = ModelDetails(name="instruction-tuned", symbol="⭕")
-    RL = ModelDetails(name="RL-tuned", symbol="🟦")
-    # TODO: To add model types, add a new line here
+    PT = ModelDetails(name="🟢 pretrained", symbol="🟢")
+    FT = ModelDetails(name="🔶 fine-tuned", symbol="🔶")
+    DL = ModelDetails(name="🔷 deep-learning", symbol="🔷")
+    ST = ModelDetails(name="🟣 statistical", symbol="🟣")
 
     Unknown = ModelDetails(name="", symbol="?")
 
@@ -88,11 +89,10 @@ class ModelType(Enum):
             return ModelType.FT
         if "pretrained" in type or "🟢" in type:
             return ModelType.PT
-        if "RL-tuned" in type or "🟦" in type:
-            return ModelType.RL
-        if "instruction-tuned" in type or "⭕" in type:
-            return ModelType.IFT
-        # TODO: To add model types, add a new line here
+        if "deep-learning" in type or "🟦" in type:
+            return ModelType.DL
+        if "statistical" in type or "🟣" in type:
+            return ModelType.ST
         return ModelType.Unknown
 
 class WeightType(Enum):
