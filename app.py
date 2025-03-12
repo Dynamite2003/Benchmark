@@ -34,24 +34,24 @@ from src.utils import norm_sNavie, pivot_df, pivot_existed_df, rename_metrics, f
 def restart_space():
     API.restart_space(repo_id=REPO_ID)
 
-### Space initialisation
-try:
-    print(EVAL_REQUESTS_PATH)
-    snapshot_download(
-        repo_id=QUEUE_REPO, local_dir=EVAL_REQUESTS_PATH, repo_type="dataset", tqdm_class=None, etag_timeout=30, token=TOKEN
-    )
-except Exception:
-    restart_space()
-try:
-    print(EVAL_RESULTS_PATH)
-    snapshot_download(
-        repo_id=RESULTS_REPO, local_dir=EVAL_RESULTS_PATH, repo_type="dataset", tqdm_class=None, etag_timeout=30, token=TOKEN
-    )
-except Exception:
-    restart_space()
+# ### Space initialisation
+# try:
+#     print(EVAL_REQUESTS_PATH)
+#     snapshot_download(
+#         repo_id=QUEUE_REPO, local_dir=EVAL_REQUESTS_PATH, repo_type="dataset", tqdm_class=None, etag_timeout=30, token=TOKEN
+#     )
+# except Exception:
+#     restart_space()
+# try:
+#     print(EVAL_RESULTS_PATH)
+#     snapshot_download(
+#         repo_id=RESULTS_REPO, local_dir=EVAL_RESULTS_PATH, repo_type="dataset", tqdm_class=None, etag_timeout=30, token=TOKEN
+#     )
+# except Exception:
+#     restart_space()
 
 
-LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS, BENCHMARK_COLS)
+# LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS, BENCHMARK_COLS)
 
 (
     finished_eval_queue_df,
