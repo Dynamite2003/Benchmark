@@ -5,10 +5,10 @@
 - **数据来源**：ETT、Traffic、Weather、ECL（共 16 列）
 - **模型对比**（共 11 个模型）：
   - [x] Informer
-  - [ ] Autoformer
+  - [x] Autoformer
   - [ ] TimesNet
   - [ ] PatchTST
-  - [ ] iTransformer
+  - [x] iTransformer
   - [ ] Stationary
   - [ ] DLinear
   - [x] Timer-XL
