@@ -26,7 +26,7 @@ from src.display.utils import (
     Precision
 )
 from src.envs import API, EVAL_REQUESTS_PATH, EVAL_RESULTS_PATH, QUEUE_REPO, REPO_ID, RESULTS_REPO, TOKEN, LONG_TERM_FORECASTING_PATH, ZERO_SHOT_FORECASTING_PATH, CLASSIFICATION_PATH
-from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df, aggregate_model_results_mse, aggregate_model_results_mae
+from src.populate import get_evaluation_queue_df, get_leaderboard_df, get_merged_df, get_model_info_df, aggregate_model_results_from_single_file
 from src.submission.submit import add_new_eval
 from src.utils import norm_sNavie, pivot_df, pivot_existed_df, rename_metrics, format_df
 
@@ -67,8 +67,8 @@ print("-----------------")
 print(long_term_forecasting_model_info_df)
 
 
-long_term_mse_dataframe = aggregate_model_results_mse(LONG_TERM_FORECASTING_PATH)
-long_term_mae_dataframe = aggregate_model_results_mae(LONG_TERM_FORECASTING_PATH)
+long_term_mse_dataframe, long_term_mae_dataframe = aggregate_model_results_from_single_file(LONG_TERM_FORECASTING_PATH)
+
 print(long_term_mse_dataframe)
 print(long_term_mae_dataframe)
 
