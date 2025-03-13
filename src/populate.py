@@ -32,7 +32,7 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
         if os.path.exists(results_file):
             # 读取模型结果
             df = pd.read_csv(results_file)
-            print(f"df is {df}")
+            #print(f"df is {df}")
             datasets.update(df['dataset'].unique())
             
             # 创建MSE记录
@@ -61,217 +61,29 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
     if not mse_df.empty:
         mse_df = mse_df.sort_values('AVG')
         mse_df = mse_df[['AVG'] + [col for col in mse_df.columns if col != 'AVG']]
-    print(f"mse_df is {mse_df}")
+    #print(f"mse_df is {mse_df}")
 
 
     mae_df = pd.DataFrame(mae_models)
     if not mae_df.empty:
         mae_df = mae_df.sort_values('AVG')
         mae_df = mae_df[['AVG'] + [col for col in mae_df.columns if col != 'AVG']]
-    print(f"mae_df is {mae_df}")
+    #print(f"mae_df is {mae_df}")
     return mse_df, mae_df
-# def aggregate_model_results_mse(results_dir):
-#     """
-#     聚合所有模型的结果为一个排行榜数据框
-    
-#     参数:
-#     results_dir: 包含所有模型结果文件夹的目录
-    
-#     返回:
-#     包含所有模型在所有数据集上的性能指标的DataFrame
-#     """
-#     all_models = []
-#     datasets = set()
-    
-#     # 遍历每个模型的结果目录
-#     for model_dir in os.listdir(results_dir):
-#         model_path = os.path.join(results_dir, model_dir)
-#         if os.path.isdir(model_path):
-#             results_file = os.path.join(model_path, "results_mse.csv")
-            
-#             if os.path.exists(results_file):
-#                 # 读取模型结果
-#                 df = pd.read_csv(results_file)
-                
-#                 # 记录所有唯一数据集
-#                 datasets.update(df['dataset'].unique())
-                
-#                 # 创建一个行记录
-#                 model_record = {'model': model_dir}
-                
-#                 # 为每个数据集添加mae和mse结果
-#                 for _, row in df.iterrows():
-#                     dataset = row['dataset']
-#                     # model_record[f'{dataset}(MSE)] = row['mae']
-#                     model_record[f'{dataset}(MSE)'] = row['mse']
-                
-#                 # 计算整体平均值
-#                 model_record['AVG'] = df['mse'].mean()
-#                 # AVG移动到最前面
-                
-                
-#                 all_models.append(model_record)
- 
-    
-#     # 创建最终的DataFrame
-#     result_df = pd.DataFrame(all_models)
-    
-#     # 对结果进行排序（可选，例如按overall_mae排序）
-#     result_df = result_df.sort_values('AVG')
-#     # 把avg移动到第一列
-#     result_df = result_df[['AVG'] + [col for col in result_df.columns if col != 'AVG']]
-#     return result_df
-
-
-# def aggregate_model_results_mae(results_dir):
-#     """
-#     聚合所有模型的结果为一个排行榜数据框
-    
-#     参数:
-#     results_dir: 包含所有模型结果文件夹的目录
-    
-#     返回:
-#     包含所有模型在所有数据集上的性能指标的DataFrame
-#     """
-#     all_models = []
-#     datasets = set()
-    
-#     # 遍历每个模型的结果目录
-#     for model_dir in os.listdir(results_dir):
-#         model_path = os.path.join(results_dir, model_dir)
-#         if os.path.isdir(model_path):
-#             results_file = os.path.join(model_path, "results_mae.csv")
-            
-#             if os.path.exists(results_file):
-#                 # 读取模型结果
-#                 df = pd.read_csv(results_file)
-                
-#                 # 记录所有唯一数据集
-#                 datasets.update(df['dataset'].unique())
-                
-#                 # 创建一个行记录
-#                 model_record = {'model': model_dir}
-                
-#                 # 为每个数据集添加mae和mse结果
-#                 for _, row in df.iterrows():
-#                     dataset = row['dataset']
-#                     model_record[f'{dataset}(MAE)'] = row['mae']
-#                     # model_record[f'{dataset}(MAE)'] = row['mse']
-                
-#                 # 计算整体平均值
-#                 model_record['AVG'] = df['mae'].mean()
-#                 # AVG移动到最前面
-                
-#                 all_models.append(model_record)
-                
-    
-#     # 创建最终的DataFrame
-#     result_df = pd.DataFrame(all_models)
-    
-#     # 对结果进行排序（可选，例如按overall_mae排序）
-#     result_df = result_df.sort_values('AVG')
-#     # 把avg移动到第一列
-#     result_df = result_df[['AVG'] + [col for col in result_df.columns if col != 'AVG']]
-    
-# #     return result_df
-# def aggregate_model_results(results_dir, metric_type='both'):
-#     """
-#     聚合所有模型的结果为一个或多个排行榜数据框
-    
-#     参数:
-#     results_dir: 包含所有模型结果文件夹的目录
-#     metric_type: 'mse', 'mae' 或 'both'，指定要提取的指标类型
-    
-#     返回:
-#     如果metric_type='both'，返回元组 (mse_df, mae_df)
-#     否则返回对应的单个DataFrame
-#     """
-#     mse_models = []
-#     mae_models = []
-#     datasets = set()
-    
-#     # 遍历每个模型的结果目录
-#     for model_dir in os.listdir(results_dir):
-#         model_path = os.path.join(results_dir, model_dir)
-#         if not os.path.isdir(model_path):
-#             continue
-            
-#         # 处理MSE数据
-#         if metric_type in ['mse', 'both']:
-#             results_file_mse = os.path.join(model_path, "results_mse.csv")
-#             if os.path.exists(results_file_mse):
-#                 # 读取模型结果
-#                 df = pd.read_csv(results_file_mse)
-#                 datasets.update(df['dataset'].unique())
-                
-#                 # 创建一个行记录
-#                 model_record = {'model': model_dir}
-                
-#                 # 为每个数据集添加mse结果
-#                 for _, row in df.iterrows():
-#                     dataset = row['dataset']
-#                     model_record[f'{dataset}(MSE)'] = row['mse']
-                
-#                 # 计算整体平均值
-#                 model_record['AVG'] = df['mse'].mean()
-#                 mse_models.append(model_record)
-        
-#         # 处理MAE数据
-#         if metric_type in ['mae', 'both']:
-#             results_file_mae = os.path.join(model_path, "results_mae.csv")
-#             if os.path.exists(results_file_mae):
-#                 # 读取模型结果
-#                 df = pd.read_csv(results_file_mae)
-#                 datasets.update(df['dataset'].unique())
-                
-#                 # 创建一个行记录
-#                 model_record = {'model': model_dir}
-                
-#                 # 为每个数据集添加mae结果
-#                 for _, row in df.iterrows():
-#                     dataset = row['dataset']
-#                     model_record[f'{dataset}(MAE)'] = row['mae']
-                
-#                 # 计算整体平均值
-#                 model_record['AVG'] = df['mae'].mean()
-#                 mae_models.append(model_record)
-    
-#     # 创建并返回相应的DataFrame
-#     results = []
-    
-#     if metric_type in ['mse', 'both'] and mse_models:
-#         mse_df = pd.DataFrame(mse_models)
-#         mse_df = mse_df.sort_values('AVG')
-#         # 把avg移动到第一列
-#         mse_df = mse_df[['AVG'] + [col for col in mse_df.columns if col != 'AVG']]
-#         results.append(mse_df)
-    
-#     if metric_type in ['mae', 'both'] and mae_models:
-#         mae_df = pd.DataFrame(mae_models)
-#         mae_df = mae_df.sort_values('AVG')
-#         # 把avg移动到第一列
-#         mae_df = mae_df[['AVG'] + [col for col in mae_df.columns if col != 'AVG']]
-#         results.append(mae_df)
-    
-#     # 根据metric_type返回结果
-#     if metric_type == 'both':
-#         return tuple(results) if len(results) > 1 else (results[0], pd.DataFrame())
-#     else:
-#         return results[0] if results else pd.DataFrame()
 
 
 def get_leaderboard_df(results_path: str, requests_path: str, cols: list, benchmark_cols: list) -> pd.DataFrame:
     """Creates a dataframe from all the individual experiment results"""
     raw_data = get_raw_eval_results(results_path, requests_path)
     all_data_json = [v.to_dict() for v in raw_data]
-    print(f"The raw data is {all_data_json}")
+    #print(f"The raw data is {all_data_json}")
 
 
     df = pd.DataFrame.from_records(all_data_json)
     df = df.sort_values(by=[AutoEvalColumn.average.name], ascending=False)
     df = df[cols].round(decimals=2)
 
-    print(f"DF for model info ********** {df}")
+    #print(f"DF for model info ********** {df}")
     # filter out if any of the benchmarks have not been produced
     df = df[has_no_nan_values(df, benchmark_cols)]
     return df

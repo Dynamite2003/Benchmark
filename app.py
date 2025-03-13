@@ -1,7 +1,7 @@
-import gradio as gr
-from gradio_leaderboard import Leaderboard, ColumnFilter, SelectColumns
+import gradio as gr # type: ignore
+from gradio_leaderboard import Leaderboard, ColumnFilter, SelectColumns # type: ignore
 import pandas as pd
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BackgroundScheduler # type: ignore
 from huggingface_hub import snapshot_download
 
 from src.about import (
@@ -34,25 +34,6 @@ from src.utils import norm_sNavie, pivot_df, pivot_existed_df, rename_metrics, f
 def restart_space():
     API.restart_space(repo_id=REPO_ID)
 
-# ### Space initialisation
-# try:
-#     print(EVAL_REQUESTS_PATH)
-#     snapshot_download(
-#         repo_id=QUEUE_REPO, local_dir=EVAL_REQUESTS_PATH, repo_type="dataset", tqdm_class=None, etag_timeout=30, token=TOKEN
-#     )
-# except Exception:
-#     restart_space()
-# try:
-#     print(EVAL_RESULTS_PATH)
-#     snapshot_download(
-#         repo_id=RESULTS_REPO, local_dir=EVAL_RESULTS_PATH, repo_type="dataset", tqdm_class=None, etag_timeout=30, token=TOKEN
-#     )
-# except Exception:
-#     restart_space()
-
-
-# LEADERBOARD_DF = get_leaderboard_df(EVAL_RESULTS_PATH, EVAL_REQUESTS_PATH, COLS, BENCHMARK_COLS)
-
 (
     finished_eval_queue_df,
     running_eval_queue_df,
@@ -63,14 +44,25 @@ def restart_space():
 long_term_forecasting_model_info_df = get_model_info_df(LONG_TERM_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 zero_shot_forecasting_model_info_df = get_model_info_df(ZERO_SHOT_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 classification_model_info_df = get_model_info_df(CLASSIFICATION_PATH, EVAL_REQUESTS_PATH)
-print("-----------------")
-print(long_term_forecasting_model_info_df)
+#print("-----------------")
+#print(long_term_forecasting_model_info_df)
 
 
 long_term_mse_dataframe, long_term_mae_dataframe = aggregate_model_results_from_single_file(LONG_TERM_FORECASTING_PATH)
 
+zero_shot_mse_dataframe, zero_shot_mae_dataframe = aggregate_model_results_from_single_file(ZERO_SHOT_FORECASTING_PATH)
+
+#classification_mse_dataframe, classification_mae_dataframe = aggregate_model_results_from_single_file(ZERO_SHOT_FORECASTING_PATH)
+
+
 print(long_term_mse_dataframe)
 print(long_term_mae_dataframe)
+
+print(zero_shot_mse_dataframe)
+print(zero_shot_mae_dataframe)
+
+print(long_term_forecasting_model_info_df,"\n")
+print(zero_shot_forecasting_model_info_df)
 
 def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:
@@ -83,7 +75,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
             try:
                 from src.populate import get_merged_df
                 merged_df = get_merged_df(dataframe, model_info_df)
-                print("合并成功！")
+                #print("合并成功！")
                 dataframe = merged_df  # 使用合并后的数据框
             except Exception as e:
                 print(f"合并数据框时出错: {e}")
@@ -97,12 +89,12 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     avg_column = None  # 确保初始化该变量
      
     # 打印所有列名以进行调试
-    print("所有数据列:", dataframe.columns.tolist())
+   # print("所有数据列:", dataframe.columns.tolist())
     
     for col in dataframe.columns:
         # 尝试不同的方式识别AVG列
         if col.endswith('AVG') or col == 'AVG' or col == 'Average':
-            print(f"找到平均值列: {col}")
+           # print(f"找到平均值列: {col}")
             avg_column = col
         # 识别其他必须显示的数据集指标列
         elif col.endswith('(MAE)') or col.endswith('(MSE)'):
@@ -112,7 +104,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     all_visible_columns = dataset_metric_columns.copy()
     if avg_column:
         all_visible_columns.append(avg_column)
-        print(f"添加平均值列到visible columns: {all_visible_columns}")
+        #print(f"添加平均值列到visible columns: {all_visible_columns}")
     else:
         print("警告: 未找到平均值列")
     
@@ -161,30 +153,33 @@ with demo:
     gr.Markdown(INTRODUCTION_TEXT, elem_classes="markdown-text")
 
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
+
         with gr.TabItem("🏅 Long-Term Forecasting(MSE) )", elem_id="time-series-benchmark-tab-table", id=1):
             leaderboard = init_leaderboard(long_term_mse_dataframe,long_term_forecasting_model_info_df)
         with gr.TabItem("🏅 Long-Term Forecasting(MAE)", elem_id="time-series-benchmark-tab-table", id=2):
             leaderboard = init_leaderboard(long_term_mae_dataframe,long_term_forecasting_model_info_df)
-   
         with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
+            
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
 
-        with gr.TabItem("🏅 Zero-Shot Forecasting(MSE)", elem_id="time-series-benchmark-tab-table", id=2):
-            leaderboard = init_leaderboard(long_term_mse_dataframe,long_term_forecasting_model_info_df)
-   
-        with gr.TabItem("🏅 Zero-Shot Forecasting(MAE)", elem_id="time-series-benchmark-tab-table", id=3):
-            leaderboard = init_leaderboard(long_term_mae_dataframe,long_term_forecasting_model_info_df)
-        with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
+        with gr.TabItem("🏅 Zero-Shot Forecasting(MSE)", elem_id="time-series-benchmark-tab-table", id=3):
+            leaderboard = init_leaderboard(zero_shot_mse_dataframe,zero_shot_forecasting_model_info_df)
+        with gr.TabItem("🏅 Zero-Shot Forecasting(MAE)", elem_id="time-series-benchmark-tab-table", id=4):
+            leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
+        with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=8):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
 
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
-        with gr.TabItem("🏅 Classification(MSE)", elem_id="time-series-benchmark-tab-table", id=3):
-            leaderboard = init_leaderboard(long_term_mse_dataframe,long_term_forecasting_model_info_df)
+        with gr.TabItem("🏅 Classification(MSE)", elem_id="time-series-benchmark-tab-table", id=6):
+            leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
+            #leaderboard = init_leaderboard(classification_mse_dataframe,classification_model_info_df)
    
-        with gr.TabItem("🏅 Classification(MAE)", elem_id="time-series-benchmark-tab-table", id=4):
-            leaderboard = init_leaderboard(long_term_mae_dataframe,long_term_forecasting_model_info_df)
-        with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=5):
+        with gr.TabItem("🏅 Classification(MAE)", elem_id="time-series-benchmark-tab-table", id=7):
+            #leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
+            #leaderboard = init_leaderboard(classification_mae_dataframe,classification_model_info_df)
+            leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
+        with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=9):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
 
 
