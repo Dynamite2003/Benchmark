@@ -1,0 +1,6 @@
+{
+    "model": "TimeMixer",
+    "model_type": "deep-learning",
+    "model_dtype": "float32",
+    "model_link": "https://arxiv.org/pdf/2405.14616"
+}
