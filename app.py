@@ -44,25 +44,21 @@ def restart_space():
 long_term_forecasting_model_info_df = get_model_info_df(LONG_TERM_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 zero_shot_forecasting_model_info_df = get_model_info_df(ZERO_SHOT_FORECASTING_PATH, EVAL_REQUESTS_PATH)
 classification_model_info_df = get_model_info_df(CLASSIFICATION_PATH, EVAL_REQUESTS_PATH)
-#print("-----------------")
-#print(long_term_forecasting_model_info_df)
 
 
-long_term_mse_dataframe, long_term_mae_dataframe = aggregate_model_results_from_single_file(LONG_TERM_FORECASTING_PATH)
 
-zero_shot_mse_dataframe, zero_shot_mae_dataframe = aggregate_model_results_from_single_file(ZERO_SHOT_FORECASTING_PATH)
+long_term_mse_dataframe, long_term_mae_dataframe,_ = aggregate_model_results_from_single_file(LONG_TERM_FORECASTING_PATH)
 
-#classification_mse_dataframe, classification_mae_dataframe = aggregate_model_results_from_single_file(ZERO_SHOT_FORECASTING_PATH)
+zero_shot_mse_dataframe, zero_shot_mae_dataframe,_ = aggregate_model_results_from_single_file(ZERO_SHOT_FORECASTING_PATH)
+
+_,_,classification_dataframe=aggregate_model_results_from_single_file(CLASSIFICATION_PATH)
 
 
-print(long_term_mse_dataframe)
-print(long_term_mae_dataframe)
-
-print(zero_shot_mse_dataframe)
-print(zero_shot_mae_dataframe)
+print(long_term_mse_dataframe,"\n")
+print(classification_dataframe)
 
 print(long_term_forecasting_model_info_df,"\n")
-print(zero_shot_forecasting_model_info_df)
+print(classification_model_info_df)
 
 def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:
@@ -97,7 +93,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
            # print(f"找到平均值列: {col}")
             avg_column = col
         # 识别其他必须显示的数据集指标列
-        elif col.endswith('(MAE)') or col.endswith('(MSE)'):
+        elif col.endswith('(MAE)') or col.endswith('(MSE)') or col.endswith('(ACCURACY)'):
             dataset_metric_columns.append(col)
     
     # 所有默认显示的列
@@ -172,13 +168,13 @@ with demo:
 
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
         with gr.TabItem("🏅 Classification(MSE)", elem_id="time-series-benchmark-tab-table", id=6):
-            leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
-            #leaderboard = init_leaderboard(classification_mse_dataframe,classification_model_info_df)
+            #leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
+            leaderboard = init_leaderboard(classification_dataframe,classification_model_info_df)
    
         with gr.TabItem("🏅 Classification(MAE)", elem_id="time-series-benchmark-tab-table", id=7):
+            
+            leaderboard = init_leaderboard(classification_dataframe,classification_model_info_df)
             #leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
-            #leaderboard = init_leaderboard(classification_mae_dataframe,classification_model_info_df)
-            leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
         with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=9):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT, elem_classes="markdown-text")
 

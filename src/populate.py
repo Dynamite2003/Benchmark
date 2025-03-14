@@ -19,6 +19,7 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
     """
     mse_models = []
     mae_models = []
+    accuracy_models=[]
     datasets = set()
     
     # 遍历每个模型的结果目录
@@ -39,6 +40,8 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
             mse_record = {'model': model_dir}
             # 创建MAE记录
             mae_record = {'model': model_dir}
+
+            accuracy_record={'model':model_dir}
             
             # 为每个数据集添加mse和mae结果
             for _, row in df.iterrows():
@@ -47,6 +50,9 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
                     mse_record[f'{dataset}(MSE)'] = row['mse']
                 if 'mae' in row:
                     mae_record[f'{dataset}(MAE)'] = row['mae']
+
+                if 'accuracy' in row:
+                    accuracy_record[f'{dataset}(ACCURACY)']=row['accuracy']
             
             # 计算平均值
             if 'mse' in df.columns:
@@ -55,21 +61,30 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
             if 'mae' in df.columns:
                 mae_record['AVG'] = df['mae'].mean()
                 mae_models.append(mae_record)
+            if 'accuracy' in df.columns:
+                print("accuracy in df columns!!!")
+                accuracy_record['AVG']=df['accuracy'].mean()
+                accuracy_models.append(accuracy_record)
     
     # 创建DataFrame并排序
     mse_df = pd.DataFrame(mse_models)
     if not mse_df.empty:
         mse_df = mse_df.sort_values('AVG')
         mse_df = mse_df[['AVG'] + [col for col in mse_df.columns if col != 'AVG']]
-    #print(f"mse_df is {mse_df}")
-
 
     mae_df = pd.DataFrame(mae_models)
     if not mae_df.empty:
         mae_df = mae_df.sort_values('AVG')
         mae_df = mae_df[['AVG'] + [col for col in mae_df.columns if col != 'AVG']]
-    #print(f"mae_df is {mae_df}")
-    return mse_df, mae_df
+
+    accuracy_df = pd.DataFrame(accuracy_models)
+    if not accuracy_df.empty:
+        print("not empty!!!")
+        accuracy_df = accuracy_df.sort_values('AVG')
+        accuracy_df = accuracy_df[['AVG'] + [col for col in accuracy_df.columns if col != 'AVG']]
+    else:
+        print("empty!!!")
+    return mse_df, mae_df, accuracy_df
 
 
 def get_leaderboard_df(results_path: str, requests_path: str, cols: list, benchmark_cols: list) -> pd.DataFrame:

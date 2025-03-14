@@ -42,3 +42,14 @@
 ---
 
 📌 **数据来源**：Timer-XL，TimeXer，TimesBERT 等包含 Baseline Model 的论文  
+
+---
+
+❓** 使用说明与待解决的问题 **
+
+- 现在三个任务的数据均可以进行写入。要求在写数据时保证config.json
+中的model名称与父文件夹名称相同
+
+- 目前还不能正确处理对缺少数据的模型的平均值。若缺少数据先写0
+
+- model_type目前只能识别deep-learning，其它类型的在网页上有不影响使用的显示bug
