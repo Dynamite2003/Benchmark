@@ -13,7 +13,7 @@
   - [ ] DLinear
   - [x] Timer-XL
   - [ ] Crossformer
-  - [ ] TimeMixer
+  - [x] TimeMixer
   - [x] TimeXer
 
 ---
