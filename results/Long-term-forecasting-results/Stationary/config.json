@@ -1,0 +1,6 @@
+{
+    "model": "Stationary",
+    "model_type": "deep-learning",
+    "model_dtype": "float32",
+    "model_link": "https://proceedings.neurips.cc/paper_files/paper/2022/hash/4054556fcaa934b0bf76da52cf4f92cb-Abstract-Conference.html"
+}

@@ -6,11 +6,11 @@
 - **模型对比**（共 11 个模型）：
   - [x] Informer
   - [x] Autoformer
-  - [ ] TimesNet
-  - [ ] PatchTST
+  - [x] TimesNet
+  - [X] PatchTST
   - [x] iTransformer
-  - [ ] Stationary
-  - [ ] DLinear
+  - [x] Stationary
+  - [x] DLinear
   - [x] Timer-XL
   - [ ] Crossformer
   - [x] TimeMixer

@@ -181,12 +181,7 @@ with demo:
         with gr.TabItem("🏅 Classification(ACCURACY)", elem_id="time-series-benchmark-tab-table", id=6):
             leaderboard = init_leaderboard(
                 classification_dataframe, classification_model_info_df)
-            # leaderboard = init_leaderboard(classification_dataframe,classification_model_info_df)
-
-        # with gr.TabItem("🏅 Classification(MAE)", elem_id="time-series-benchmark-tab-table", id=7):
-
-            # leaderboard = init_leaderboard(classification_dataframe,classification_model_info_df)
-            # leaderboard = init_leaderboard(zero_shot_mae_dataframe,zero_shot_forecasting_model_info_df)
+          
         with gr.TabItem("📝 About", elem_id="time-series-benchmark-tab-table", id=9):
             gr.Markdown(TIME_SERIES_BENCHMARKS_TEXT,
                         elem_classes="markdown-text")
