@@ -12,7 +12,7 @@
   - [x] Stationary
   - [x] DLinear
   - [x] Timer-XL
-  - [ ] Crossformer
+  - [x] Crossformer
   - [x] TimeMixer
   - [x] TimeXer
 
