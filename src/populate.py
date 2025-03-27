@@ -166,7 +166,9 @@ def get_merged_df(result_df: pd.DataFrame, model_info_df: pd.DataFrame) -> pd.Da
     # 如果存在model_w_link列也删除它，避免重复
     if 'model_w_link' in merged_df.columns:
         merged_df = merged_df.drop(columns=['model_w_link'], errors='ignore')
-    # 如果model列有重复
+    
+    # 替换model_type_symbol列名为Type
+    merged_df = merged_df.rename(columns={'model_type_symbol': 'Type'})
 
 
     return merged_df

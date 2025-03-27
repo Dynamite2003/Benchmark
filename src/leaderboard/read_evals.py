@@ -223,7 +223,7 @@ def get_model_info(results_path: str, requests_path: str) -> list[ModelConfig]:
             results.append(v)
         except KeyError: 
             continue
-
+    
     return results
 
 

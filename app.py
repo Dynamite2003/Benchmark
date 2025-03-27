@@ -80,6 +80,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
                 merged_df = get_merged_df(dataframe, model_info_df)
                 # print("合并成功！")
                 dataframe = merged_df  # 使用合并后的数据框
+                print("使用合并后的数据框", dataframe)
             except Exception as e:
                 print(f"合并数据框时出错: {e}")
                 # 如果合并失败，继续使用原始数据框
@@ -100,6 +101,9 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
             avg_column = col
         # 识别其他必须显示的数据集指标列
         elif col.endswith('(MAE)') or col.endswith('(MSE)') or col.endswith('(ACCURACY)'):
+            dataset_metric_columns.append(col)
+        # 添加模型类型符号列
+        elif col.endswith('Type'):
             dataset_metric_columns.append(col)
 
     # 所有默认显示的列
