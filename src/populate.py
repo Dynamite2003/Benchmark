@@ -58,13 +58,17 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
             if 'mse' in df.columns:
                 # 排除缺失值后计算平均值
                 mse_record['AVG'] =df[df['mse']!='-']['mse'].mean()
+                # 截断三位小数
+                mse_record['AVG'] = round(mse_record['AVG'], 3)
                 mse_models.append(mse_record)
             if 'mae' in df.columns:
                 mae_record['AVG'] = df[df['mae']!='-']['mae'].mean()
+                mae_record['AVG'] = round(mae_record['AVG'], 3)
                 mae_models.append(mae_record)
             if 'accuracy' in df.columns:
                 print("accuracy in df columns!!!")
                 accuracy_record['AVG']=df['accuracy'].mean()
+                accuracy_record['AVG']=round(accuracy_record['AVG'],3)
                 accuracy_models.append(accuracy_record)
     
     # 创建DataFrame并排序

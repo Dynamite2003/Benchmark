@@ -71,38 +71,28 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     if dataframe is None or dataframe.empty:
         raise ValueError("Leaderboard DataFrame is empty or None.")
 
-    # 如果提供了模型信息数据框，使用get_merged_df合并
     if model_info_df is not None and not model_info_df.empty:
         # 确保model_info_df包含必要的列
         if 'model' in model_info_df.columns and 'model_w_link' in model_info_df.columns:
             try:
                 from src.populate import get_merged_df
                 merged_df = get_merged_df(dataframe, model_info_df)
-                # print("合并成功！")
                 dataframe = merged_df  # 使用合并后的数据框
                 print("使用合并后的数据框", dataframe)
             except Exception as e:
                 print(f"合并数据框时出错: {e}")
-                # 如果合并失败，继续使用原始数据框
         else:
             print("模型信息数据框缺少必要的列 'model' 或 'model_w_link'")
 
      # 初始化变量
     dataset_metric_columns = ['model']
-    avg_column = None  # 确保初始化该变量
-
-    # 打印所有列名以进行调试
-   # print("所有数据列:", dataframe.columns.tolist())
+    avg_column = None 
 
     for col in dataframe.columns:
-        # 尝试不同的方式识别AVG列
         if col.endswith('AVG') or col == 'AVG' or col == 'Average':
-           # print(f"找到平均值列: {col}")
             avg_column = col
-        # 识别其他必须显示的数据集指标列
         elif col.endswith('(MAE)') or col.endswith('(MSE)') or col.endswith('(ACCURACY)'):
             dataset_metric_columns.append(col)
-        # 添加模型类型符号列
         elif col.endswith('Type'):
             dataset_metric_columns.append(col)
 
@@ -110,7 +100,6 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
     all_visible_columns = dataset_metric_columns.copy()
     if avg_column:
         all_visible_columns.append(avg_column)
-        # print(f"添加平均值列到visible columns: {all_visible_columns}")
     else:
         print("警告: 未找到平均值列")
 
@@ -120,16 +109,13 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
         if col not in all_visible_columns:
             columns_to_hide.append(col)
 
-    # 在init_leaderboard函数中添加以下代码
     datatype_list = []
     for col in dataframe.columns:
         if col == 'model':
-            datatype_list.append('markdown')  # 使用markdown格式渲染带链接的模型名
+            datatype_list.append('markdown') 
         else:
             datatype_list.append(
                 'number' if pd.api.types.is_numeric_dtype(dataframe[col]) else 'str')
-
-    # 剩余代码修改
     return Leaderboard(
         value=dataframe,
         datatype=datatype_list,
@@ -146,8 +132,7 @@ def init_leaderboard(dataframe, model_info_df=None, sort_val: str = "Average"):
             ColumnFilter(ModelInfoColumn.model_type.name,
                          type="checkboxgroup", label="Model types"),
         ],
-        # 单独设置model 列的宽度
-        column_widths=[250] + [180 for _ in range(len(dataframe.columns)-1)],
+        min_width=[200] + [120 for _ in range(len(dataframe.columns)-1)],
         interactive=False,
     )
 
