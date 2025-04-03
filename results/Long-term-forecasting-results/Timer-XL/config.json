@@ -1,6 +1,6 @@
 {
     "model": "Timer-XL",
-    "model_type": "deep-learning",
+    "model_type": "pretrained",
     "model_dtype": "float32",
     "model_link": "https://arxiv.org/abs/2410.04803"
 }

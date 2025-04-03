@@ -56,10 +56,11 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
             
             # 计算平均值
             if 'mse' in df.columns:
-                mse_record['AVG'] = df['mse'].mean()
+                # 排除缺失值后计算平均值
+                mse_record['AVG'] =df[df['mse']!='-']['mse'].mean()
                 mse_models.append(mse_record)
             if 'mae' in df.columns:
-                mae_record['AVG'] = df['mae'].mean()
+                mae_record['AVG'] = df[df['mae']!='-']['mae'].mean()
                 mae_models.append(mae_record)
             if 'accuracy' in df.columns:
                 print("accuracy in df columns!!!")

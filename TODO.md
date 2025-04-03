@@ -27,6 +27,7 @@
   - [ ] Moirai
   - [ ] TimesFM
   - [ ] Chronos
+  
 
 ---
 
@@ -53,3 +54,4 @@
 - 目前还不能正确处理对缺少数据的模型的平均值。若缺少数据先写0
 
 - model_type目前只能识别deep-learning，其它类型的在网页上有不影响使用的显示bug
+
