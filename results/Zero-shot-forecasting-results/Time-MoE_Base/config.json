@@ -1,0 +1,6 @@
+{
+    "model": "Time-MoE_Base",
+    "model_type": "pretrained",
+    "model_dtype": "float32",
+    "model_link": "https://arxiv.org/pdf/2409.16040"
+}

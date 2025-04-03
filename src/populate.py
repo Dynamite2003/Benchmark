@@ -56,19 +56,23 @@ def aggregate_model_results_from_single_file(results_dir, result_filename="resul
             
             # 计算平均值
             if 'mse' in df.columns:
-                # 排除缺失值后计算平均值
-                mse_record['AVG'] =df[df['mse']!='-']['mse'].mean()
-                # 截断三位小数
+                valid_mse = pd.to_numeric(df['mse'], errors='coerce')  # 将非数值转为NaN
+                mse_record['AVG'] = valid_mse.mean()
+                # 三位小数
                 mse_record['AVG'] = round(mse_record['AVG'], 3)
                 mse_models.append(mse_record)
             if 'mae' in df.columns:
-                mae_record['AVG'] = df[df['mae']!='-']['mae'].mean()
+                valid_mae = pd.to_numeric(df['mae'], errors='coerce')
+                mae_record['AVG'] = valid_mae.mean()
+                # 三位小数
                 mae_record['AVG'] = round(mae_record['AVG'], 3)
                 mae_models.append(mae_record)
             if 'accuracy' in df.columns:
                 print("accuracy in df columns!!!")
-                accuracy_record['AVG']=df['accuracy'].mean()
-                accuracy_record['AVG']=round(accuracy_record['AVG'],3)
+                valid_acc = pd.to_numeric(df['accuracy'], errors='coerce')
+                accuracy_record['AVG'] = valid_acc.mean()
+                # 三位小数
+                accuracy_record['AVG'] = round(accuracy_record['AVG'], 3)
                 accuracy_models.append(accuracy_record)
     
     # 创建DataFrame并排序
