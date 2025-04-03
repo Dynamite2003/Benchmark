@@ -59,3 +59,11 @@ Now we first need to add `model_configs` and `long_term_forceasting_results` int
 
 Then we base on the format of results to write a function to turn it into a correct dataframe, like `grouped_df` function in `utils.py` in GIFT-EVAL. This can be done easier because our results is less and easy to understand.
 
+
+# Data Source
+Long-term forecasting board:
+Timer-XL, iTransformer, DLinear, PatchTST, TimesNet, Stationary, Autoformer from Timer-XL paper https://arxiv.org/abs/2410.04803 Table 11.
+
+Crossformer, TimerXer from TimerXer paper https://arxiv.org/pdf/2402.19072 Table 12.
+
+TimeMixer, Informer from TimeMixer paper https://arxiv.org/pdf/2405.14616 Table 13.
