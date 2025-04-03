@@ -67,3 +67,7 @@ Timer-XL, iTransformer, DLinear, PatchTST, TimesNet, Stationary, Autoformer from
 Crossformer, TimerXer from TimerXer paper https://arxiv.org/pdf/2402.19072 Table 12.
 
 TimeMixer, Informer from TimeMixer paper https://arxiv.org/pdf/2405.14616 Table 13.
+
+
+# Note 
+The AVG column now is simply the unweighted average of all datasets. 
