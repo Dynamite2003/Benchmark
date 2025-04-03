@@ -1,0 +1,7 @@
+dataset,mse,mae
+ECL,-,-
+Weather,-,-
+ETTh1,0.473,0.443
+ETTh2,0.392,0.406
+ETTm1,0.433,0.418
+ETTm2,0.328,0.346

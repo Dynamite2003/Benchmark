@@ -1,0 +1,6 @@
+{
+    "model": "Timer-XL",
+    "model_type": "pretrained",
+    "model_dtype": "float32",
+    "model_link": "https://arxiv.org/pdf/2410.04803"
+}

@@ -1,6 +1,0 @@
-{
-    "model": "Chronos",
-    "model_type": "pretrained",
-    "model_dtype": "float32",
-    "model_link": "https://huggingface.co/amazon/chronos-t5-base"
-}
