@@ -35,11 +35,10 @@
 - **整理** Classification 结果（Accuracy）
 - **数据来源**：UEA 数据集（共 11 列）
 - **模型对比**（共 4 个模型）：
-  - [ ] TimesBERT
-  - [ ] Moment
-  - [ ] ModernTCN
-  - [ ] TimesNet
-
+  - [x] TimesBERT(data source)
+  - [x] Moment
+  - [x] ModernTCN
+  - [x] TimesNet
 ---
 
 📌 **数据来源**：Timer-XL，TimeXer，TimesBERT 等包含 Baseline Model 的论文  
