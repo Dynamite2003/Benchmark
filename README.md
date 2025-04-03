@@ -68,6 +68,12 @@ Crossformer, TimerXer from TimerXer paper https://arxiv.org/pdf/2402.19072 Table
 
 TimeMixer, Informer from TimeMixer paper https://arxiv.org/pdf/2405.14616 Table 13.
 
+Zero-shot forecasting board:
+All models from Timer-XL paper https://arxiv.org/abs/2410.04803  Table 12.
+
+Classification board:
+All models from TimesBert paper https://arxiv.org/abs/2502.21245 Table 5.
+
 
 # Note 
 The AVG column now is simply the unweighted average of all datasets. 
