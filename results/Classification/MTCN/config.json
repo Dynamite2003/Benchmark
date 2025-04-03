@@ -1,0 +1,6 @@
+{
+    "model": "MTCN",
+    "model_type": "deep-learning",
+    "model_dtype": "float32",
+    "model_link": "https://openreview.net/forum?id=vpJMJerXHU"
+}
