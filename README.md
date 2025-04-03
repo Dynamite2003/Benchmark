@@ -61,18 +61,18 @@ Then we base on the format of results to write a function to turn it into a corr
 
 
 # Data Source
-Long-term forecasting board:
-Timer-XL, iTransformer, DLinear, PatchTST, TimesNet, Stationary, Autoformer from Timer-XL paper https://arxiv.org/abs/2410.04803 Table 11.
+## Long-term forecasting board:
+- Timer-XL, iTransformer, DLinear, PatchTST, TimesNet, Stationary, Autoformer from Timer-XL paper https://arxiv.org/abs/2410.04803 Table 11.
 
-Crossformer, TimerXer from TimerXer paper https://arxiv.org/pdf/2402.19072 Table 12.
+- Crossformer, TimerXer from TimerXer paper https://arxiv.org/pdf/2402.19072 Table 12.
 
-TimeMixer, Informer from TimeMixer paper https://arxiv.org/pdf/2405.14616 Table 13.
+- TimeMixer, Informer from TimeMixer paper https://arxiv.org/pdf/2405.14616 Table 13.
 
-Zero-shot forecasting board:
-All models from Timer-XL paper https://arxiv.org/abs/2410.04803  Table 12.
+## Zero-shot forecasting board:
+- All models from Timer-XL paper https://arxiv.org/abs/2410.04803  Table 12.
 
-Classification board:
-All models from TimesBert paper https://arxiv.org/abs/2502.21245 Table 5.
+## Classification board:
+- All models from TimesBert paper https://arxiv.org/abs/2502.21245 Table 5.
 
 
 # Note 
